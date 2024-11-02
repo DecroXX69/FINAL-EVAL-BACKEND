@@ -6,7 +6,7 @@ require('dotenv').config();
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
-// Register route
+
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login route
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   
@@ -53,9 +53,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Add people route (Newly modified to only require email)
-// Add people route (Newly modified to only require email)
-// Add people route
 router.post('/add-people', async (req, res) => {
   const { email } = req.body;
 
@@ -70,7 +67,7 @@ router.post('/add-people', async (req, res) => {
     }
 
     const newUser = new User({ email });
-    newUser.setIsNewUser(false); // Set isNewUser to false, so name is not required
+    newUser.setIsNewUser(false); 
     await newUser.save();
 
     res.status(201).json({ message: 'Person added successfully' });

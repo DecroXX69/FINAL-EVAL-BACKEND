@@ -21,19 +21,19 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Encrypt the password before saving
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || !this.password) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Password comparison method
+
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Set isNewUser flag method
+
 userSchema.methods.setIsNewUser = function (value) {
   this._isNewUser = value;
 };

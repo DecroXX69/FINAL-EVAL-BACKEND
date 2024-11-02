@@ -1,4 +1,4 @@
-// models/Task.js
+
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
@@ -34,7 +34,7 @@ const taskSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true // Ensures each task is associated with a specific user
+        required: true 
     }
 }, { timestamps: true });
 

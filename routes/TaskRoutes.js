@@ -5,7 +5,7 @@ const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 
-router.post('/tasks', protect, async (req, res) => { 
+router.post('/', protect, async (req, res) => { 
     console.log('POST /tasks endpoint hit');
     const { title, priority, dueDate, checklist, status, assignedTo } = req.body;
 
@@ -27,7 +27,7 @@ router.post('/tasks', protect, async (req, res) => {
 });
 
 
-router.get('/tasks', protect, async (req, res) => { 
+router.get('/', protect, async (req, res) => { 
     try {
         
         const tasks = await Task.find({ user: req.user._id });
@@ -38,7 +38,7 @@ router.get('/tasks', protect, async (req, res) => {
 });
 
 
-router.put('/tasks/:taskId', protect, async (req, res) => { 
+router.put('/:taskId', protect, async (req, res) => { 
     const { taskId } = req.params;
 
     try {
@@ -56,7 +56,7 @@ router.put('/tasks/:taskId', protect, async (req, res) => {
 });
 
 
-router.delete('/tasks/:taskId', protect, async (req, res) => { 
+router.delete('/:taskId', protect, async (req, res) => { 
     const { taskId } = req.params;
 
     try {

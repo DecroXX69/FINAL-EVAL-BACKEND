@@ -23,6 +23,6 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/user_databa
 
 
 app.use('/api/auth', authRoutes);
-app.use('/api', taskRoutes); 
+app.use('/api/task', taskRoutes); 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -67,4 +67,36 @@ router.delete('/:taskId', protect, async (req, res) => {
     }
 });
 
+
+// In taskRoutes.js or similar
+router.get('/analytics', protect, async (req, res) => {
+    try {
+        const backlogCount = await Task.countDocuments({ status: 'Backlog' });
+        const toDoCount = await Task.countDocuments({ status: 'To Do' });
+        const inProgressCount = await Task.countDocuments({ status: 'In Progress' });
+        const completedCount = await Task.countDocuments({ status: 'Done' });
+        
+        const highPriorityCount = await Task.countDocuments({ priority: 'High Priority' });
+        const mediumPriorityCount = await Task.countDocuments({ priority: 'Medium Priority' });
+        const lowPriorityCount = await Task.countDocuments({ priority: 'Low Priority' });
+        
+        const dueTasksCount = await Task.countDocuments({ dueDate: { $exists: true } });
+
+        res.json({
+            backlog: backlogCount,
+            toDo: toDoCount,
+            inProgress: inProgressCount,
+            completed: completedCount,
+            highPriority: highPriorityCount,
+            mediumPriority: mediumPriorityCount,
+            lowPriority: lowPriorityCount,
+            dueTasks: dueTasksCount,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching analytics data' });
+    }
+});
+
+
+
 module.exports = router;

@@ -1,12 +1,10 @@
-// routes/taskRoutes.js
+
 const express = require('express');
 const Task = require('../models/Task');
-const { protect } = require('../middleware/authMiddleware'); // Middleware to check authentication
+const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// Create a new task
-router.post('/', protect, async (req, res) => { // Change route to /tasks
-    console.log('POST /tasks endpoint hit');
+router.post('/', protect, async (req, res) => { 
     const { title, priority, dueDate, checklist, status, assignedTo} = req.body;
 
     try {
@@ -17,7 +15,7 @@ router.post('/', protect, async (req, res) => { // Change route to /tasks
             checklist,
             status,
             assignedTo,
-            user: req.user._id // Links the task to the logged-in user
+            user: req.user._id 
         });
         await task.save();
         res.status(201).json(task);
@@ -26,10 +24,10 @@ router.post('/', protect, async (req, res) => { // Change route to /tasks
     }
 });
 
-// Get all tasks for a user
-router.get('/', protect, async (req, res) => { // Change route to /tasks
+
+router.get('/', protect, async (req, res) => { 
     try {
-        // Retrieves tasks for the logged-in user only
+        
         const tasks = await Task.find({ user: req.user._id });
         res.json(tasks);
     } catch (error) {
@@ -37,12 +35,12 @@ router.get('/', protect, async (req, res) => { // Change route to /tasks
     }
 });
 
-// Update a task
-router.put('/:taskId', protect, async (req, res) => { // Change route to /tasks/:taskId
+
+router.put('/:taskId', protect, async (req, res) => { 
     const { taskId } = req.params;
 
     try {
-        // Updates the task only if it belongs to the logged-in user
+        
         const task = await Task.findOneAndUpdate(
             { _id: taskId, user: req.user._id },
             req.body,
@@ -55,12 +53,12 @@ router.put('/:taskId', protect, async (req, res) => { // Change route to /tasks/
     }
 });
 
-// Delete a task
-router.delete('/:taskId', protect, async (req, res) => { // Change route to /tasks/:taskId
+
+router.delete('/:taskId', protect, async (req, res) => { 
     const { taskId } = req.params;
 
     try {
-        // Deletes the task only if it belongs to the logged-in user
+        
         const task = await Task.findOneAndDelete({ _id: taskId, user: req.user._id });
         if (!task) return res.status(404).json({ message: 'Task not found' });
         res.json({ message: 'Task deleted successfully' });

@@ -1,11 +1,27 @@
 const express = require('express');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { protect } = require('../middleware/authMiddleware');
+
 require('dotenv').config();
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
+router.get('/validate-token', (req, res) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Token is invalid or expired' });
+    }
+    return res.status(200).json({ message: 'Token is valid', expiresAt: decoded.exp });
+  });
+});
 
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;

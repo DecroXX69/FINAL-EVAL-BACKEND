@@ -7,13 +7,11 @@ const protect = async (req, res, next) => {
     // Check if the request has an Authorization header and if it starts with "Bearer"
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1]; // Extract the token
-    }
-
-    // If no token, return 401 Unauthorized
-    if (!token) {
+    }else {
         return res.status(401).json({ message: 'No token provided, authorization denied' });
     }
 
+    
     try {
         // Verify the token using the secret key
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

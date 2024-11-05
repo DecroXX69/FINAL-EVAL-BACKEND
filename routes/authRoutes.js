@@ -70,19 +70,19 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/add-people', async (req, res) => {
-  const { email } = req.body;
+  const { email , addedBy } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required to add a person' });
   }
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email, addedBy });
     if (existingUser) {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    const newUser = new User({ email });
+    const newUser = new User({ email,userType:'added',addedBy });
     newUser.setIsNewUser(false); 
     await newUser.save();
 
@@ -92,16 +92,50 @@ router.post('/add-people', async (req, res) => {
   }
 });
 
-
 router.get('/users', protect, async (req, res) => {
   try {
-      const users = await User.find({}, 'name email'); 
+      const users = await User.find({}, 'name email userType addedBy'); 
       res.status(200).json(users);
   } catch (error) {
       console.error('Error fetching users:', error);
       res.status(500).json({ message: 'Server error' });
   }
 });
+
+router.put('/update', protect, async (req, res) => {
+  try {
+      console.log('Request body:', req.body);
+      const { name, email, oldPassword, newPassword } = req.body;
+
+      const user = await User.findById(req.user._id);
+      if (!user) {
+          console.error('User not found');
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      if (oldPassword) {
+          const isMatch = await user.comparePassword(oldPassword);
+          if (!isMatch) {
+              console.error('Old password is incorrect');
+              return res.status(400).json({ message: 'Old password is incorrect' });
+          }
+      }
+
+      user.name = name || user.name;
+      user.email = email || user.email;
+      if (newPassword) {
+          user.password = newPassword; // Ensure password hashing in the model
+      }
+
+      await user.save();
+      console.log('User updated successfully');
+      res.status(200).json({ message: 'User details updated successfully' });
+  } catch (error) {
+      console.error('Error updating user details:', error); // More detailed log
+      res.status(500).json({ message: 'Error updating user details' });
+  }
+});
+
 
 
 module.exports = router;

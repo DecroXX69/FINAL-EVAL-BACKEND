@@ -19,6 +19,9 @@ const userSchema = new mongoose.Schema({
     required: function() { return this.isNewUser; },
     minlength: 6,
   },
+  userType: { type: String, enum: ['regular', 'added'], default: 'regular' },
+  addedBy: { type: String },
+  addedByEmail:{type:String}
 }, { timestamps: true });
 
 

@@ -27,10 +27,7 @@ const taskSchema = new mongoose.Schema({
         enum: ['Backlog', 'To Do', 'In Progress', 'Done'],
         default: 'To Do'
     },
-    assignedTo: {
-        type: String,
-        default: ''
-    },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

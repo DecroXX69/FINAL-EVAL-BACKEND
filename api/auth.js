@@ -47,6 +47,37 @@ export default async function handler(req, res) {
                     res.status(500).json({ error: error.message });
                 }
                 break;
+            
+                case 'add-people':
+                    const { email, addedBy } = req.body; // Include addedBy in request body
+                    if (!email || !addedBy) {
+                        return res.status(400).json({ message: 'Email and addedBy are required' });
+                    }
+                    try {
+                        let user = await User.findOne({ email });
+                        if (!user) {
+                            // Create a new user if not found
+                            user = new User({ email, userType: 'added', addedBy }); // Include addedBy when creating the user
+                            await user.save();
+                        }
+                
+                        // Populate addedBy with the corresponding email
+                        const addedByUser = await User.findById(addedBy);
+                        if (addedByUser) {
+                            user = {
+                                ...user.toObject(),
+                                addedByEmail: addedByUser.email, // Add the email to the response
+                            };
+                        }
+                
+                        res.status(200).json({ message: 'User added successfully', user });
+                    } catch (error) {
+                        console.error('Server error:', error); // Add detailed logging
+                        res.status(500).json({ error: error.message });
+                    }
+                
+                                    break;
+                
 
             // Add more cases for other actions as needed (e.g., adding people)
             default:

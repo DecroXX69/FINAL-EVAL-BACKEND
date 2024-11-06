@@ -1,13 +1,13 @@
-// api/tasks.js
-import dbConnect from '../../utils/dbConnect'; // Utility function to connect to MongoDB
-import Task from '../../models/Task'; // Adjust path based on your structure
-import { protect } from '../../middleware/authMiddleware'; // You may need to adjust this
+
+import dbConnect from '../../utils/dbConnect'; 
+import Task from '../../models/Task'; 
+import { protect } from '../../middleware/authMiddleware'; 
 
 export default async function handler(req, res) {
-    await dbConnect(); // Connect to the database
+    await dbConnect(); 
 
-    // Handle authentication here, or you may want to do it in a middleware
-    const user = await protect(req, res); // Adjust this based on how you want to check the user
+   
+    const user = await protect(req, res); 
 
     if (!user) return res.status(401).json({ message: 'Unauthorized' });
 
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
                 checklist,
                 status,
                 assignedTo,
-                user: user._id // Links the task to the logged-in user
+                user: user._id 
             });
             await task.save();
             res.status(201).json(task);
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
             res.status(500).json({ message: 'Error retrieving tasks', error });
         }
     } else if (req.method === 'PUT') {
-        const { taskId } = req.query; // Change the way you get taskId if needed
+        const { taskId } = req.query; 
         try {
             const task = await Task.findOneAndUpdate(
                 { _id: taskId, user: user._id },
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
             res.status(500).json({ message: 'Error updating task', error });
         }
     } else if (req.method === 'DELETE') {
-        const { taskId } = req.query; // Change the way you get taskId if needed
+        const { taskId } = req.query; 
         try {
             const task = await Task.findOneAndDelete({ _id: taskId, user: user._id });
             if (!task) return res.status(404).json({ message: 'Task not found' });

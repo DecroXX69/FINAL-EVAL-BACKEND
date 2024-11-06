@@ -1,4 +1,3 @@
-
 const express = require('express');
 const Task = require('../models/Task');
 const { protect } = require('../middleware/authMiddleware');
@@ -71,7 +70,7 @@ router.delete('/:taskId', protect, async (req, res) => {
 // In taskRoutes.js or similar
 router.get('/analytics', protect, async (req, res) => {
     try {
-        // Extract the user ID from the `protect` middleware
+        // Extract the user ID from the protect middleware
         const userId = req.user._id;
 
         // Count documents filtered by user ID and task status/priority
@@ -103,9 +102,10 @@ router.get('/analytics', protect, async (req, res) => {
     }
 });
 
+// routes/task.js
 router.get('/view/:id', protect, async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id); // Assuming Task is your model
+        const task = await Task.findById(req.params.id);
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
@@ -114,6 +114,37 @@ router.get('/view/:id', protect, async (req, res) => {
         res.status(500).json({ message: 'Error fetching task', error });
     }
 });
+
+// Assuming you’re using Express.js
+// PUT route to update a specific checklist item status
+router.put('/:taskId/checklist/:itemIndex', protect, async (req, res) => {
+    const { taskId, itemIndex } = req.params; // Make sure you are extracting params correctly
+    const { completed } = req.body; // Make sure this is what you are sending
+
+    try {
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
+        // Make sure itemIndex is a valid number
+        const index = parseInt(itemIndex, 10);
+        if (index < 0 || index >= task.checklist.length) {
+            return res.status(404).json({ message: 'Checklist item not found' });
+        }
+
+        // Update the checklist item's completed status
+        task.checklist[index].completed = completed; // This should update the completed status
+        await task.save(); // Save the task after updating
+
+        return res.json(task); // Return the updated task
+    } catch (error) {
+        console.error('Error updating checklist:', error); // Log the error for debugging
+        return res.status(500).json({ message: 'Failed to update checklist', error });
+    }
+});
+
+
 
 
 

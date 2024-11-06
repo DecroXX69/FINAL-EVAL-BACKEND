@@ -1,12 +1,12 @@
-// api/auth.js
-import dbConnect from '../../utils/dbConnect'; // Utility function to connect to MongoDB
-import User from '../../models/User'; // Adjust path based on your structure
+
+import dbConnect from '../../utils/dbConnect'; 
+import User from '../../models/User'; 
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
 export default async function handler(req, res) {
-    await dbConnect(); // Connect to the database
+    await dbConnect(); 
 
     if (req.method === 'POST') {
         const { action, name, email, password } = req.body;
@@ -49,37 +49,37 @@ export default async function handler(req, res) {
                 break;
             
                 case 'add-people':
-                    const { email, addedBy } = req.body; // Include addedBy in request body
+                    const { email, addedBy } = req.body; 
                     if (!email || !addedBy) {
                         return res.status(400).json({ message: 'Email and addedBy are required' });
                     }
                     try {
                         let user = await User.findOne({ email });
                         if (!user) {
-                            // Create a new user if not found
-                            user = new User({ email, userType: 'added', addedBy }); // Include addedBy when creating the user
+                       
+                            user = new User({ email, userType: 'added', addedBy }); 
                             await user.save();
                         }
                 
-                        // Populate addedBy with the corresponding email
+                       
                         const addedByUser = await User.findById(addedBy);
                         if (addedByUser) {
                             user = {
                                 ...user.toObject(),
-                                addedByEmail: addedByUser.email, // Add the email to the response
+                                addedByEmail: addedByUser.email, 
                             };
                         }
                 
                         res.status(200).json({ message: 'User added successfully', user });
                     } catch (error) {
-                        console.error('Server error:', error); // Add detailed logging
+                        console.error('Server error:', error); 
                         res.status(500).json({ error: error.message });
                     }
                 
                                     break;
                 
 
-            // Add more cases for other actions as needed (e.g., adding people)
+          
             default:
                 res.status(400).json({ message: 'Invalid action' });
         }
